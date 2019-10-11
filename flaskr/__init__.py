@@ -1,11 +1,11 @@
 from flask import Flask, render_template
 import os
-
+import os
 
 def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_mapping(
-        SQLALCHEMY_DATABASE_URI='sqlite:///./data.db',
+        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data.db'),
         SECRET_KEY=os.environ.get("SECRET_KEY", ""),
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
@@ -31,7 +31,5 @@ def create_app(test_config=None):
     # create database
     from . import repository
     repository.init_app(app)
-    from flaskr.repository.user_repository import query_by_id
-    query_by_id(1)
 
     return app
