@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 import os
-import os
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -31,5 +30,9 @@ def create_app(test_config=None):
     # create database
     from . import repository
     repository.init_app(app)
+
+    # add apis
+    from . import api
+    api.init_app(app)
 
     return app
