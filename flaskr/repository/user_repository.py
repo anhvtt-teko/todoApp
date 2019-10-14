@@ -31,4 +31,15 @@ def generate_id():
     while user is not None:
         id = id + 1
         user = query_by_id(id)
-    return id
+    return str(id)
+
+
+def validate_user(username, password):
+    if not check_if_exist(username):
+        return False
+
+    user = query_by_username(username)
+    if user.password_hash == password:
+        return True
+    else:
+        return False
