@@ -13,3 +13,4 @@ def init_app(app, **kwargs):
 
 from flaskr.model.user import User
 from flaskr.model.todo import Todo
+from flaskr.model.task import Task

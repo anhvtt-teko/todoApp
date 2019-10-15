@@ -2,15 +2,16 @@ from flask import request
 from flask_restful import Resource
 from flaskr.model.user import User
 from flaskr.repository import user_repository
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class Auth(Resource):
-    def put(self, username):
+    def post(self, username):
         password = request.form['password']
+        hashed_password = generate_password_hash(password)
         fullname = request.form['fullname']
         id = user_repository.generate_id()
-        print(str(id) + " " + username)
-        user = User(id=id, username=username, password_hash=password, fullname=fullname)
+        user = User(id=id, username=username, password_hash=hashed_password, fullname=fullname)
         success = user_repository.create_new_user(user)
         if success:
             return {"response": "ok",
@@ -25,7 +26,7 @@ class Auth(Resource):
         if not user_repository.check_if_exist(username):
             return {"response": "user is not exist"}, 201
         user = user_repository.query_by_username(username)
-        if user.password_hash != password:
+        if not check_password_hash(user.password_hash, password):
             return {"response": "incorrect username or password"}, 201
         else:
             return {"response": "success",

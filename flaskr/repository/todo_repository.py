@@ -30,4 +30,4 @@ def generate_id():
     while todo is not None:
         id = id + 1
         todo = query_by_id(id)
-    return id
+    return str(id)

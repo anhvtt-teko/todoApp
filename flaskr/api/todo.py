@@ -1,27 +1,41 @@
 from flask import request
 from flask_restful import Resource
-from flaskr.model.todo import Todo
 from flaskr.model.user import User
-from flaskr.repository import todo_repository, user_repository
+from flaskr.model.task import Task
+from flaskr.repository import user_repository, task_repository
 
 
 class Todo(Resource):
     def get(self, todo_id):
         username = request.form['username']
         password = request.form['password']
-        if not todo_repository.check_if_exist(todo_id):
+        id = int(todo_id)
+        if not task_repository.check_if_exist(id):
             return {"response": "todo id is not exist"}, 201
         else:
-            if not user_repository.validate_user(username,password):
+            if not user_repository.validate_user(username, password):
                 return {"response": "auth failed"}, 201
-            todo = todo_repository.query_by_id(todo_id)
+            task = task_repository.query_by_id(id)
             user = user_repository.query_by_username(username)
-            if todo.owner_id != user.id:
+            if task.owner != user.id:
                 return {"response": "wrong owner"}, 201
             else:
                 return {"response": "success",
-                        "title": todo.tittle,
-                        "content": todo.content}, 200
+                        "title": task.title,
+                        "content": task.content}, 200
+
+    def post(self, todo_id):
+        title = request.form['title']
+        content = request.form['content']
+        username = request.form['username']
+        password = request.form['password']
+        if not user_repository.validate_user(username, password):
+            return {"response": "auth failed"}, 201
+        user = user_repository.query_by_username(username)
+        id = task_repository.generate_id()
+        task = Task(id=id, title=title, content=content, owner=user.id)
+        task_repository.create_task(task)
+        return {"response": "success"}, 200
 
     def put(self, todo_id):
         title = request.form['title']
@@ -31,14 +45,27 @@ class Todo(Resource):
         if not user_repository.validate_user(username, password):
             return {"response": "auth failed"}, 201
         user = user_repository.query_by_username(username)
-        id = todo_repository.generate_id()
-        todo = Todo()
-        todo.id = id
-        todo.tittle = title
-        todo.content = content
-        todo.owner_id = user.id
-        todo_repository.create_todo(todo)
-        return {"response": "success"}, 200
+        task = task_repository.query_by_id(todo_id)
+        if task.owner != user.id:
+            return {"response": "wrong owner"}, 201
+        else:
+            task.title = title
+            task.content = content
+            task_repository.update(task)
+            return {"response": "success"}, 200
+
+    def delete(self, todo_id):
+        username = request.form['username']
+        password = request.form['password']
+        if not user_repository.validate_user(username, password):
+            return {"response": "auth failed"}, 201
+        user = user_repository.query_by_username(username)
+        task = task_repository.query_by_id(todo_id)
+        if task.owner != user.id:
+            return {"response": "wrong owner"}, 201
+        else:
+            task_repository.delete(task)
+            return {"response": "success"}, 200
 
 
 def init_app(api):

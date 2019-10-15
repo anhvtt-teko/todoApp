@@ -1,5 +1,6 @@
 from flaskr.repository import db
 from flaskr.model.user import User
+from werkzeug.security import check_password_hash
 
 
 def create_new_user(user):
@@ -39,7 +40,7 @@ def validate_user(username, password):
         return False
 
     user = query_by_username(username)
-    if user.password_hash == password:
+    if check_password_hash(user.password_hash, password):
         return True
     else:
         return False
