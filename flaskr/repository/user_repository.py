@@ -8,9 +8,9 @@ def create_new_user(user):
     if not exist:
         db.session.add(user)
         db.session.commit()
-        return True
+        return user
     else:
-        return False
+        raise BaseException("User already exist")
 
 
 def check_if_exist(username):
@@ -24,15 +24,6 @@ def query_by_id(user_id):
 
 def query_by_username(username):
     return User.query.filter_by(username=username).first()
-
-
-def generate_id():
-    id = 0
-    user = query_by_id(id)
-    while user is not None:
-        id = id + 1
-        user = query_by_id(id)
-    return str(id)
 
 
 def validate_user(username, password):

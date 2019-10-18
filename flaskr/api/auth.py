@@ -10,24 +10,26 @@ class Auth(Resource):
         password = request.form['password']
         hashed_password = generate_password_hash(password)
         fullname = request.form['fullname']
-        id = user_repository.generate_id()
-        user = User(id=id, username=username, password_hash=hashed_password, fullname=fullname)
-        success = user_repository.create_new_user(user)
-        if success:
+        user = User(username=username, password_hash=hashed_password, fullname=fullname)
+        try:
+            result = user_repository.create_new_user(user)
             return {"response": "ok",
                     "username": username,
                     "password": password,
-                    "fullname": fullname}, 200
-        else:
-            return {"response": "user already exist"}, 201
+                    "fullname": fullname}, 201
+        except BaseException as e:
+            return {"response": str(e)}, 400
+            raise
 
-    def get(self, username):
+
+class Login(Resource):
+    def post(self, username):
         password = request.form['password']
         if not user_repository.check_if_exist(username):
-            return {"response": "user is not exist"}, 201
+            return {"response": "user is not exist"}, 404
         user = user_repository.query_by_username(username)
         if not check_password_hash(user.password_hash, password):
-            return {"response": "incorrect username or password"}, 201
+            return {"response": "incorrect username or password"}, 400
         else:
             return {"response": "success",
                     "fullname": user.fullname}, 200
@@ -35,3 +37,4 @@ class Auth(Resource):
 
 def init_app(api):
     api.add_resource(Auth, '/api/auth/<string:username>')
+    api.add_resource(Login, '/api/login/<string:username>')
