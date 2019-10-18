@@ -10,16 +10,14 @@ class Auth(Resource):
         password = request.form['password']
         hashed_password = generate_password_hash(password)
         fullname = request.form['fullname']
+        if user_repository.check_if_exist(username):
+            return {"response": "User already exist"}, 400
         user = User(username=username, password_hash=hashed_password, fullname=fullname)
-        try:
-            result = user_repository.create_new_user(user)
-            return {"response": "ok",
-                    "username": username,
-                    "password": password,
-                    "fullname": fullname}, 201
-        except BaseException as e:
-            return {"response": str(e)}, 400
-            raise
+        user_repository.create_new_user(user)
+        return {"response": "ok",
+                "username": username,
+                "password": password,
+                "fullname": fullname}, 201
 
 
 class Login(Resource):

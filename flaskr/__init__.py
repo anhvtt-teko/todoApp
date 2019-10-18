@@ -24,6 +24,11 @@ def create_app(test_config=None):
     def index():
         return render_template('index.html')
 
+    from werkzeug.exceptions import InternalServerError
+    @app.errorhandler(InternalServerError)
+    def handle_500(e):
+        return {"response": "Internal Server Error"}, 500
+
     # register auth blueprints
     from flaskr.auth import auth
     app.register_blueprint(auth.authBp)

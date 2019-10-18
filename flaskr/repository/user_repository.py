@@ -4,13 +4,8 @@ from werkzeug.security import check_password_hash
 
 
 def create_new_user(user):
-    exist = check_if_exist(user.username)
-    if not exist:
-        db.session.add(user)
-        db.session.commit()
-        return user
-    else:
-        raise BaseException("User already exist")
+    db.session.add(user)
+    db.session.commit()
 
 
 def check_if_exist(username):
