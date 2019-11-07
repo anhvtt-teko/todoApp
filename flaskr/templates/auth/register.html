@@ -1,5 +1,24 @@
-{% extends 'base.html' %}
-
-{% block header %}
-    <h1>{% block title %}Register{% endblock %}</h1>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+    <form>
+        Fullname:<br>
+        <input type="text" name="fullname">
+        <br>
+        Username:<br>
+        <input type="text" name="username">
+        <br>
+        Password:<br>
+        <input type="password" name="password">
+        <br>
+        Confirm Password:<br>
+        <input type="password" name="confirm">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

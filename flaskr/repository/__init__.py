@@ -9,5 +9,8 @@ def init_app(app, **kwargs):
     db.app = app
     db.init_app(app)
     migrate.init_app(app)
-    from flaskr.model.user import User
-    db.create_all()
+
+
+from flaskr.model.user import User
+from flaskr.model.todo import Todo
+from flaskr.model.task import Task
